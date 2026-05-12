@@ -1,0 +1,73 @@
+-- Current employee records in filter context.
+Total Employees =
+COUNTROWS('fact_employees')
+
+-- Employees retained in the company.
+Active Employees =
+CALCULATE([Total Employees], 'fact_employees'[Attrition] = "No")
+
+-- Employees marked as attrited.
+Attrition Employees =
+CALCULATE([Total Employees], 'fact_employees'[Attrition] = "Yes")
+
+-- Percentage of employees who attrited.
+Attrition Rate =
+DIVIDE([Attrition Employees], [Total Employees]) * 100
+
+-- Percentage of employees retained.
+Retention Rate =
+100 - [Attrition Rate]
+
+-- Employees classified as high attrition risk.
+High Risk Employees =
+CALCULATE([Total Employees], 'fact_employees'[AttritionRisk] = "High")
+
+-- Share of employees classified as high risk.
+High Risk Rate =
+DIVIDE([High Risk Employees], [Total Employees]) * 100
+
+-- Average monthly income.
+Avg Monthly Salary =
+AVERAGE('fact_employees'[MonthlyIncome])
+
+-- Average job satisfaction score.
+Avg Job Satisfaction =
+AVERAGE('fact_employees'[JobSatisfaction])
+
+-- Average engineered skill score.
+Avg Skill Score =
+AVERAGE('fact_employees'[SkillScore])
+
+-- Average employee tenure in years.
+Avg Tenure Years =
+AVERAGE('fact_employees'[YearsAtCompany])
+
+-- Share of employees promoted in the latest period flag.
+Promotion Rate =
+DIVIDE(CALCULATE([Total Employees], 'fact_employees'[PromotionFlag] = 1), [Total Employees]) * 100
+
+-- Attrition rate among employees working overtime.
+Overtime Attrition Rate =
+DIVIDE(CALCULATE([Attrition Employees], 'fact_employees'[OverTime] = "Yes"), CALCULATE([Total Employees], 'fact_employees'[OverTime] = "Yes")) * 100
+
+-- Male minus female average salary as a percent of male salary.
+Salary Gap =
+VAR MaleSalary = CALCULATE(AVERAGE('fact_employees'[MonthlyIncome]), 'fact_employees'[Gender] = "Male")
+VAR FemaleSalary = CALCULATE(AVERAGE('fact_employees'[MonthlyIncome]), 'fact_employees'[Gender] = "Female")
+RETURN DIVIDE(MaleSalary - FemaleSalary, MaleSalary) * 100
+
+-- Average trainings attended last year.
+Avg Training =
+AVERAGE('fact_employees'[TrainingTimesLastYear])
+
+-- Average performance rating.
+Avg Performance =
+AVERAGE('fact_employees'[PerformanceRating])
+
+-- Total AI recommendation records.
+Total Recommendations =
+COUNTROWS('ai_recommendations')
+
+-- AI recommendations marked high priority.
+High Priority Recommendations =
+CALCULATE([Total Recommendations], 'ai_recommendations'[Priority] = "High")

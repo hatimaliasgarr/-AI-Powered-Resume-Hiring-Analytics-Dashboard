@@ -1,0 +1,25 @@
+table 'dim_jobrole'
+
+	column 'JobRole'
+		dataType: string
+		sourceColumn: JobRole
+
+	column 'AvgSkillScore'
+		dataType: double
+		sourceColumn: AvgSkillScore
+
+	column 'AvgSatisfaction'
+		dataType: double
+		sourceColumn: AvgSatisfaction
+
+	partition 'dim_jobrole' = m
+		mode: import
+		source =
+			let
+			    Source = Excel.Workbook(File.Contents("D:\\Projects\\anlytics-projects\\AI-Powered Resume & Hiring Analytics-pb1\\HR-Analytics-Dashboard\\data\\processed\\dim_jobrole.xlsx"), null, true),
+			    Data = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
+			    PromotedHeaders = Table.PromoteHeaders(Data, [PromoteAllScalars=true]),
+			    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{"JobRole", Text.Type}, {"AvgSkillScore", Number.Type}, {"AvgSatisfaction", Number.Type}})
+			in
+			    TypedColumns
+

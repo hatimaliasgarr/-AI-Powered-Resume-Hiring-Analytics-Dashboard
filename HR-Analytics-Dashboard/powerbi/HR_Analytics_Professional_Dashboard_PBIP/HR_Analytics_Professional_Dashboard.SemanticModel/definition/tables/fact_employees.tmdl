@@ -1,0 +1,223 @@
+table 'fact_employees'
+
+	column 'Age'
+		dataType: int64
+		sourceColumn: Age
+
+	column 'Attrition'
+		dataType: string
+		sourceColumn: Attrition
+
+	column 'BusinessTravel'
+		dataType: string
+		sourceColumn: BusinessTravel
+
+	column 'DailyRate'
+		dataType: int64
+		sourceColumn: DailyRate
+
+	column 'Department'
+		dataType: string
+		sourceColumn: Department
+
+	column 'DistanceFromHome'
+		dataType: int64
+		sourceColumn: DistanceFromHome
+
+	column 'Education'
+		dataType: int64
+		sourceColumn: Education
+
+	column 'EducationField'
+		dataType: string
+		sourceColumn: EducationField
+
+	column 'EmployeeCount'
+		dataType: int64
+		sourceColumn: EmployeeCount
+
+	column 'EmployeeNumber'
+		dataType: int64
+		sourceColumn: EmployeeNumber
+
+	column 'EnvironmentSatisfaction'
+		dataType: int64
+		sourceColumn: EnvironmentSatisfaction
+
+	column 'Gender'
+		dataType: string
+		sourceColumn: Gender
+
+	column 'HourlyRate'
+		dataType: int64
+		sourceColumn: HourlyRate
+
+	column 'JobInvolvement'
+		dataType: int64
+		sourceColumn: JobInvolvement
+
+	column 'JobLevel'
+		dataType: int64
+		sourceColumn: JobLevel
+
+	column 'JobRole'
+		dataType: string
+		sourceColumn: JobRole
+
+	column 'JobSatisfaction'
+		dataType: int64
+		sourceColumn: JobSatisfaction
+
+	column 'MaritalStatus'
+		dataType: string
+		sourceColumn: MaritalStatus
+
+	column 'MonthlyIncome'
+		dataType: int64
+		sourceColumn: MonthlyIncome
+
+	column 'MonthlyRate'
+		dataType: int64
+		sourceColumn: MonthlyRate
+
+	column 'NumCompaniesWorked'
+		dataType: int64
+		sourceColumn: NumCompaniesWorked
+
+	column 'Over18'
+		dataType: string
+		sourceColumn: Over18
+
+	column 'OverTime'
+		dataType: string
+		sourceColumn: OverTime
+
+	column 'PercentSalaryHike'
+		dataType: int64
+		sourceColumn: PercentSalaryHike
+
+	column 'PerformanceRating'
+		dataType: int64
+		sourceColumn: PerformanceRating
+
+	column 'RelationshipSatisfaction'
+		dataType: int64
+		sourceColumn: RelationshipSatisfaction
+
+	column 'StandardHours'
+		dataType: int64
+		sourceColumn: StandardHours
+
+	column 'StockOptionLevel'
+		dataType: int64
+		sourceColumn: StockOptionLevel
+
+	column 'TotalWorkingYears'
+		dataType: int64
+		sourceColumn: TotalWorkingYears
+
+	column 'TrainingTimesLastYear'
+		dataType: int64
+		sourceColumn: TrainingTimesLastYear
+
+	column 'WorkLifeBalance'
+		dataType: int64
+		sourceColumn: WorkLifeBalance
+
+	column 'YearsAtCompany'
+		dataType: int64
+		sourceColumn: YearsAtCompany
+
+	column 'YearsInCurrentRole'
+		dataType: int64
+		sourceColumn: YearsInCurrentRole
+
+	column 'YearsSinceLastPromotion'
+		dataType: int64
+		sourceColumn: YearsSinceLastPromotion
+
+	column 'YearsWithCurrManager'
+		dataType: int64
+		sourceColumn: YearsWithCurrManager
+
+	column 'HireDate'
+		dataType: dateTime
+		sourceColumn: HireDate
+
+	column 'SkillScore'
+		dataType: double
+		sourceColumn: SkillScore
+
+	column 'AttritionRisk'
+		dataType: string
+		sourceColumn: AttritionRisk
+
+	column 'HiringChannel'
+		dataType: string
+		sourceColumn: HiringChannel
+
+	column 'SalaryBand'
+		dataType: string
+		sourceColumn: SalaryBand
+
+	column 'TenureGroup'
+		dataType: string
+		sourceColumn: TenureGroup
+
+	column 'YearHired'
+		dataType: int64
+		sourceColumn: YearHired
+
+	column 'PromotionFlag'
+		dataType: int64
+		sourceColumn: PromotionFlag
+
+	column 'AttritionBinary'
+		dataType: int64
+		sourceColumn: AttritionBinary
+
+	measure 'Total Employees' = COUNTROWS('fact_employees')
+
+	measure 'Active Employees' = CALCULATE([Total Employees], 'fact_employees'[Attrition] = "No")
+
+	measure 'Attrition Employees' = CALCULATE([Total Employees], 'fact_employees'[Attrition] = "Yes")
+
+	measure 'Attrition Rate' = DIVIDE([Attrition Employees], [Total Employees]) * 100
+
+	measure 'Retention Rate' = 100 - [Attrition Rate]
+
+	measure 'High Risk Employees' = CALCULATE([Total Employees], 'fact_employees'[AttritionRisk] = "High")
+
+	measure 'High Risk Rate' = DIVIDE([High Risk Employees], [Total Employees]) * 100
+
+	measure 'Avg Monthly Salary' = AVERAGE('fact_employees'[MonthlyIncome])
+
+	measure 'Avg Job Satisfaction' = AVERAGE('fact_employees'[JobSatisfaction])
+
+	measure 'Avg Skill Score' = AVERAGE('fact_employees'[SkillScore])
+
+	measure 'Avg Tenure Years' = AVERAGE('fact_employees'[YearsAtCompany])
+
+	measure 'Promotion Rate' = DIVIDE(CALCULATE([Total Employees], 'fact_employees'[PromotionFlag] = 1), [Total Employees]) * 100
+
+	measure 'Overtime Attrition Rate' = DIVIDE(CALCULATE([Attrition Employees], 'fact_employees'[OverTime] = "Yes"), CALCULATE([Total Employees], 'fact_employees'[OverTime] = "Yes")) * 100
+
+	measure 'Salary Gap' = VAR MaleSalary = CALCULATE(AVERAGE('fact_employees'[MonthlyIncome]), 'fact_employees'[Gender] = "Male")
+VAR FemaleSalary = CALCULATE(AVERAGE('fact_employees'[MonthlyIncome]), 'fact_employees'[Gender] = "Female")
+RETURN DIVIDE(MaleSalary - FemaleSalary, MaleSalary) * 100
+
+	measure 'Avg Training' = AVERAGE('fact_employees'[TrainingTimesLastYear])
+
+	measure 'Avg Performance' = AVERAGE('fact_employees'[PerformanceRating])
+
+	partition 'fact_employees' = m
+		mode: import
+		source =
+			let
+			    Source = Excel.Workbook(File.Contents("D:\\Projects\\anlytics-projects\\AI-Powered Resume & Hiring Analytics-pb1\\HR-Analytics-Dashboard\\data\\processed\\fact_employees.xlsx"), null, true),
+			    Data = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
+			    PromotedHeaders = Table.PromoteHeaders(Data, [PromoteAllScalars=true]),
+			    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{"Age", Int64.Type}, {"Attrition", Text.Type}, {"BusinessTravel", Text.Type}, {"DailyRate", Int64.Type}, {"Department", Text.Type}, {"DistanceFromHome", Int64.Type}, {"Education", Int64.Type}, {"EducationField", Text.Type}, {"EmployeeCount", Int64.Type}, {"EmployeeNumber", Int64.Type}, {"EnvironmentSatisfaction", Int64.Type}, {"Gender", Text.Type}, {"HourlyRate", Int64.Type}, {"JobInvolvement", Int64.Type}, {"JobLevel", Int64.Type}, {"JobRole", Text.Type}, {"JobSatisfaction", Int64.Type}, {"MaritalStatus", Text.Type}, {"MonthlyIncome", Int64.Type}, {"MonthlyRate", Int64.Type}, {"NumCompaniesWorked", Int64.Type}, {"Over18", Text.Type}, {"OverTime", Text.Type}, {"PercentSalaryHike", Int64.Type}, {"PerformanceRating", Int64.Type}, {"RelationshipSatisfaction", Int64.Type}, {"StandardHours", Int64.Type}, {"StockOptionLevel", Int64.Type}, {"TotalWorkingYears", Int64.Type}, {"TrainingTimesLastYear", Int64.Type}, {"WorkLifeBalance", Int64.Type}, {"YearsAtCompany", Int64.Type}, {"YearsInCurrentRole", Int64.Type}, {"YearsSinceLastPromotion", Int64.Type}, {"YearsWithCurrManager", Int64.Type}, {"HireDate", DateTime.Type}, {"SkillScore", Number.Type}, {"AttritionRisk", Text.Type}, {"HiringChannel", Text.Type}, {"SalaryBand", Text.Type}, {"TenureGroup", Text.Type}, {"YearHired", Int64.Type}, {"PromotionFlag", Int64.Type}, {"AttritionBinary", Int64.Type}})
+			in
+			    TypedColumns
+

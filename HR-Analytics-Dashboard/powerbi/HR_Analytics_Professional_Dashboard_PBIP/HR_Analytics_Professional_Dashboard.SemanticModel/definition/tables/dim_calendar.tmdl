@@ -1,0 +1,37 @@
+table 'dim_calendar'
+
+	column 'Date'
+		dataType: dateTime
+		sourceColumn: Date
+
+	column 'Year'
+		dataType: int64
+		sourceColumn: Year
+
+	column 'Quarter'
+		dataType: string
+		sourceColumn: Quarter
+
+	column 'MonthNumber'
+		dataType: int64
+		sourceColumn: MonthNumber
+
+	column 'MonthName'
+		dataType: string
+		sourceColumn: MonthName
+
+	column 'YearMonth'
+		dataType: string
+		sourceColumn: YearMonth
+
+	partition 'dim_calendar' = m
+		mode: import
+		source =
+			let
+			    Source = Excel.Workbook(File.Contents("D:\\Projects\\anlytics-projects\\AI-Powered Resume & Hiring Analytics-pb1\\HR-Analytics-Dashboard\\data\\processed\\dim_calendar.xlsx"), null, true),
+			    Data = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
+			    PromotedHeaders = Table.PromoteHeaders(Data, [PromoteAllScalars=true]),
+			    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{"Date", DateTime.Type}, {"Year", Int64.Type}, {"Quarter", Text.Type}, {"MonthNumber", Int64.Type}, {"MonthName", Text.Type}, {"YearMonth", Text.Type}})
+			in
+			    TypedColumns
+

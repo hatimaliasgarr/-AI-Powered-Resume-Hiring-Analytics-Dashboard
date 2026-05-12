@@ -1,0 +1,12 @@
+relationship 29eed6fb-0c9e-4357-a8c3-18d52629e043
+	fromColumn: 'fact_employees'.'Department'
+	toColumn: 'dim_department'.'Department'
+
+relationship 53610dbc-e842-4479-b90a-47ee53417000
+	fromColumn: 'fact_employees'.'JobRole'
+	toColumn: 'dim_jobrole'.'JobRole'
+
+relationship 57c13a42-73b1-4f8f-9e4d-bd627c79c169
+	fromColumn: 'fact_employees'.'HireDate'
+	toColumn: 'dim_calendar'.'Date'
+
